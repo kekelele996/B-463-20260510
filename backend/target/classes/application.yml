@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: asset-management
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # Simplified URL with essential params
+    url: jdbc:mysql://db:3306/asset_db?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: rootpassword
+    hikari:
+      connection-init-sql: SET NAMES utf8mb4
+      pool-name: HikariCP
+      auto-commit: true
+
+  jpa:
+    open-in-view: false
+
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    com.example.asset: DEBUG
+
+server:
+  port: 8080

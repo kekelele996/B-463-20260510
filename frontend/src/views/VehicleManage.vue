@@ -121,6 +121,7 @@ const getStatusLabel = (status) => {
     case 'driving': return '行驶中'
     case 'parked': return '停泊中'
     case 'maintenance': return '维护中'
+    case 'borrowed': return '已借出'
     default: return status
   }
 }
@@ -130,6 +131,7 @@ const getStatusType = (status) => {
     case 'driving': return 'success'
     case 'parked': return 'info'
     case 'maintenance': return 'warning'
+    case 'borrowed': return 'danger'
     default: return ''
   }
 }
