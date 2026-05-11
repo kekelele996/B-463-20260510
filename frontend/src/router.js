@@ -5,6 +5,7 @@ import Dashboard from './views/Dashboard.vue'
 import UserManage from './views/UserManage.vue'
 import EquipmentManage from './views/EquipmentManage.vue'
 import VehicleManage from './views/VehicleManage.vue'
+import BorrowApplication from './views/BorrowApplication.vue'
 import MainLayout from './layout/MainLayout.vue'
 
 const routes = [
@@ -18,7 +19,8 @@ const routes = [
       { path: 'dashboard', component: Dashboard },
       { path: 'users', component: UserManage },
       { path: 'equipments', component: EquipmentManage },
-      { path: 'vehicles', component: VehicleManage }
+      { path: 'vehicles', component: VehicleManage },
+      { path: 'borrow', component: BorrowApplication }
     ]
   }
 ]

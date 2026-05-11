@@ -116,6 +116,7 @@ const getStatusLabel = (status) => {
     case 'online': return '在线'
     case 'offline': return '离线'
     case 'maintenance': return '维护中'
+    case 'borrowed': return '已借出'
     default: return status
   }
 }
@@ -125,6 +126,7 @@ const getStatusType = (status) => {
     case 'online': return 'success'
     case 'offline': return 'info'
     case 'maintenance': return 'warning'
+    case 'borrowed': return 'danger'
     default: return ''
   }
 }
