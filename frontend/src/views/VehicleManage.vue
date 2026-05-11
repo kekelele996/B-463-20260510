@@ -29,9 +29,10 @@
         <el-table-column prop="mileage" label="里程数 (km)" sortable />
         <el-table-column prop="maintenanceRecord" label="维护记录" show-overflow-tooltip />
         <el-table-column prop="lastMaintenanceBy" label="最后维护人" v-if="hasPermission('ROLE_ADMIN')" />
-        <el-table-column label="操作" width="200" align="center">
+        <el-table-column label="操作" width="260" align="center">
           <template #default="scope">
             <el-button size="small" type="primary" plain icon="Edit" @click="openDialog(true, scope.row)">编辑</el-button>
+            <el-button size="small" type="warning" plain @click="openBorrowDialog(scope.row)" v-if="scope.row.status !== 'borrowed'">借用</el-button>
             <el-popconfirm title="确定删除该车辆吗？" @confirm="handleDelete(scope.row)" v-if="hasPermission('ROLE_ADMIN')">
               <template #reference>
                 <el-button size="small" type="danger" plain icon="Delete">删除</el-button>
@@ -55,6 +56,7 @@
             <el-option label="行驶中" value="driving" />
             <el-option label="停泊中" value="parked" />
             <el-option label="维护中" value="maintenance" />
+            <el-option label="借出" value="borrowed" />
           </el-select>
         </el-form-item>
         <el-form-item label="里程数" prop="mileage">
@@ -68,6 +70,32 @@
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">取消</el-button>
           <el-button type="primary" @click="save" :loading="submitting">确定</el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+    <el-dialog v-model="borrowDialogVisible" title="借用车辆" width="500px">
+      <el-form :model="borrowForm" label-width="100px" :rules="borrowRules" ref="borrowFormRef">
+        <el-form-item label="车牌号">
+          <el-input :model-value="borrowForm.assetName" disabled />
+        </el-form-item>
+        <el-form-item label="借用原因" prop="reason">
+          <el-input v-model="borrowForm.reason" type="textarea" :rows="3" />
+        </el-form-item>
+        <el-form-item label="预计归还" prop="expectedReturnDate">
+          <el-date-picker
+            v-model="borrowForm.expectedReturnDate"
+            type="datetime"
+            placeholder="选择预计归还时间"
+            style="width: 100%"
+            value-format="YYYY-MM-DDTHH:mm:ss"
+          />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="borrowDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="submitBorrow" :loading="borrowSubmitting">提交</el-button>
         </span>
       </template>
     </el-dialog>
@@ -86,6 +114,9 @@ const dialogVisible = ref(false)
 const isEdit = ref(false)
 const submitting = ref(false)
 const formRef = ref(null)
+const borrowDialogVisible = ref(false)
+const borrowSubmitting = ref(false)
+const borrowFormRef = ref(null)
 
 const user = JSON.parse(localStorage.getItem('user') || '{}')
 const roles = user.roles || []
@@ -109,6 +140,18 @@ const rules = {
   status: [{ required: true, message: '请选择状态', trigger: 'change' }]
 }
 
+const borrowForm = reactive({
+  assetId: null,
+  assetName: '',
+  reason: '',
+  expectedReturnDate: ''
+})
+
+const borrowRules = {
+  reason: [{ required: true, message: '请输入借用原因', trigger: 'blur' }],
+  expectedReturnDate: [{ required: true, message: '请选择预计归还时间', trigger: 'change' }]
+}
+
 const filteredData = computed(() => {
   if (!searchQuery.value) return tableData.value
   return tableData.value.filter(item => 
@@ -121,6 +164,7 @@ const getStatusLabel = (status) => {
     case 'driving': return '行驶中'
     case 'parked': return '停泊中'
     case 'maintenance': return '维护中'
+    case 'borrowed': return '借出'
     default: return status
   }
 }
@@ -130,6 +174,7 @@ const getStatusType = (status) => {
     case 'driving': return 'success'
     case 'parked': return 'info'
     case 'maintenance': return 'warning'
+    case 'borrowed': return 'danger'
     default: return ''
   }
 }
@@ -180,6 +225,34 @@ const save = async () => {
         ElMessage.error(e.response?.data?.message || '操作失败')
       } finally {
         submitting.value = false
+      }
+    }
+  })
+}
+
+const openBorrowDialog = (row) => {
+  Object.assign(borrowForm, { assetId: row.id, assetName: row.licensePlate, reason: '', expectedReturnDate: '' })
+  borrowDialogVisible.value = true
+}
+
+const submitBorrow = async () => {
+  if (!borrowFormRef.value) return
+  await borrowFormRef.value.validate(async (valid) => {
+    if (valid) {
+      borrowSubmitting.value = true
+      try {
+        await api.post('/borrows', {
+          assetType: 'vehicle',
+          assetId: borrowForm.assetId,
+          reason: borrowForm.reason,
+          expectedReturnDate: borrowForm.expectedReturnDate
+        })
+        ElMessage.success('借用申请已提交')
+        borrowDialogVisible.value = false
+      } catch (e) {
+        ElMessage.error(e.response?.data?.message || '提交失败')
+      } finally {
+        borrowSubmitting.value = false
       }
     }
   })
