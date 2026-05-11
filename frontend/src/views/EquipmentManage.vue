@@ -54,6 +54,7 @@
             <el-option label="在线" value="online" />
             <el-option label="离线" value="offline" />
             <el-option label="维护中" value="maintenance" />
+            <el-option label="借出" value="borrowed" />
           </el-select>
         </el-form-item>
         <el-form-item label="维护记录" prop="maintenanceRecord">
@@ -116,6 +117,7 @@ const getStatusLabel = (status) => {
     case 'online': return '在线'
     case 'offline': return '离线'
     case 'maintenance': return '维护中'
+    case 'borrowed': return '借出'
     default: return status
   }
 }
@@ -125,6 +127,7 @@ const getStatusType = (status) => {
     case 'online': return 'success'
     case 'offline': return 'info'
     case 'maintenance': return 'warning'
+    case 'borrowed': return 'danger'
     default: return ''
   }
 }

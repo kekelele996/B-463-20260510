@@ -29,6 +29,14 @@
           <el-icon><Van /></el-icon>
           <span>车辆管理</span>
         </el-menu-item>
+        <el-menu-item index="/borrow-apply">
+          <el-icon><Document /></el-icon>
+          <span>借用申请</span>
+        </el-menu-item>
+        <el-menu-item index="/borrow-approve" v-if="hasPermission('ROLE_ADMIN')">
+          <el-icon><Check /></el-icon>
+          <span>借用审批</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -86,6 +94,8 @@ const currentRouteName = computed(() => {
         case '/users': return '用户管理'
         case '/equipments': return '设备管理'
         case '/vehicles': return '车辆管理'
+        case '/borrow-apply': return '借用申请'
+        case '/borrow-approve': return '借用审批'
         default: return ''
     }
 })
