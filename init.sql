@@ -7,6 +7,7 @@ DROP TABLE IF EXISTS sys_role_permission;
 DROP TABLE IF EXISTS sys_user;
 DROP TABLE IF EXISTS sys_role;
 DROP TABLE IF EXISTS sys_permission;
+DROP TABLE IF EXISTS borrow_request;
 DROP TABLE IF EXISTS equipment;
 DROP TABLE IF EXISTS vehicle;
 
@@ -76,6 +77,21 @@ CREATE TABLE IF NOT EXISTS equipment (
     last_maintenance_by VARCHAR(50)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS borrow_request (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    asset_type VARCHAR(20) NOT NULL,
+    asset_id BIGINT NOT NULL,
+    applicant_id BIGINT NOT NULL,
+    reason VARCHAR(500),
+    expected_return_date DATETIME NOT NULL,
+    actual_return_date DATETIME,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending',
+    approved_by BIGINT,
+    approve_remark VARCHAR(500),
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS vehicle (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     license_plate VARCHAR(20) NOT NULL,
@@ -122,6 +138,8 @@ INSERT INTO sys_permission (id, parent_id, name, code, path, component, type, ic
 INSERT INTO sys_permission (id, parent_id, name, code, path, component, type, icon, sort_order) VALUES (8, 7, 'Equipment', 'asset:equip:list', '/equipments', 'views/EquipmentManage', 1, 'Monitor', 1);
 -- 3.2 Vehicle (Menu)
 INSERT INTO sys_permission (id, parent_id, name, code, path, component, type, icon, sort_order) VALUES (9, 7, 'Vehicle', 'asset:vehicle:list', '/vehicles', 'views/VehicleManage', 1, 'Van', 2);
+-- 3.3 Borrow Request (Menu)
+INSERT INTO sys_permission (id, parent_id, name, code, path, component, type, icon, sort_order) VALUES (10, 7, 'Borrow Request', 'asset:borrow:list', '/borrows', 'views/BorrowRequest', 1, 'Document', 3);
 
 -- Role Permissions
 -- Admin gets everything
@@ -132,6 +150,7 @@ INSERT INTO sys_role_permission (role_id, permission_id) VALUES (2, 1); -- Dashb
 INSERT INTO sys_role_permission (role_id, permission_id) VALUES (2, 7); -- Asset Manage Dir
 INSERT INTO sys_role_permission (role_id, permission_id) VALUES (2, 8); -- Equipment
 INSERT INTO sys_role_permission (role_id, permission_id) VALUES (2, 9); -- Vehicle
+INSERT INTO sys_role_permission (role_id, permission_id) VALUES (2, 10); -- Borrow Request
 
 -- Business Data
 INSERT INTO equipment (name, type, status, maintenance_record) VALUES ('Server A', 'IT', 'online', 'Checkup done');

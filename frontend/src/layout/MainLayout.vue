@@ -29,6 +29,10 @@
           <el-icon><Van /></el-icon>
           <span>车辆管理</span>
         </el-menu-item>
+        <el-menu-item index="/borrows">
+          <el-icon><Document /></el-icon>
+          <span>借用申请</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
     <el-container>
@@ -86,6 +90,7 @@ const currentRouteName = computed(() => {
         case '/users': return '用户管理'
         case '/equipments': return '设备管理'
         case '/vehicles': return '车辆管理'
+        case '/borrows': return '借用申请'
         default: return ''
     }
 })
